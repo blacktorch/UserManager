@@ -5,9 +5,9 @@ echo "PORT=3000" > .env
 echo "DB_URL='mongodb://0.0.0.0:27017/database'" >> .env
 
 # Create Dockerfile for UserManager App
-touch Dockerfile.app
+touch Dockerfile.appx
 df=$"FROM node:carbon\n\n# Create app directory\nWORKDIR /usr/src/app\n\n# Install app dependencies\nCOPY package*.json ./\n\nRUN npm install\n\nCOPY . .\n\nEXPOSE 3000\nCMD [ \"npm\", \"start\" ]"
-echo -e $df > Dockerfile.app
+echo -e $df > Dockerfile.appx
 
 # Create Dockerfile for MongoDB Container
 touch Dockerfile.db
@@ -18,11 +18,11 @@ echo -e $mdf > Dockerfile.db
 touch .dockerignore
 echo -e "node_modules\nnpm-debug.log" > .dockerignore
 
+#Build Application Image
+docker build -f Dockerfile.appx -t user/usermanager .
+
 #Build MongoDB Image
 docker build -f Dockerfile.db -t user/mongodb .
-
-#Build Application Image
-docker build -f Dokerfile.app -t user/usermanager .
 
 #Run Application and Database Images as seperate detatched containers
 docker run -p 3000:3000 -d user/usermanager
